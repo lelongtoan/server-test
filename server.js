@@ -11,6 +11,16 @@ app.get("/health", (req, res) => {
   res.status(200).send("ok");
 });
 
+app.get("/snapshot", (req, res) => {
+  res.json({
+    ok: true,
+    tick: 1,
+    gameDay: 1,
+    gameHour: 12,
+    message: "hello from render"
+  });
+});
+
 app.listen(port, "0.0.0.0", () => {
   console.log(`Server running on port ${port}`);
 });
