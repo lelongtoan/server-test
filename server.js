@@ -104,6 +104,18 @@ app.post("/command", (req, res) => {
 
   room.snapshot.tick += 1;
 
+  if (command && command.type === "Move") {
+    const players = room.snapshot.players || [];
+    const player = players.find(p => p.playerId === command.playerId);
+
+    if (player) {
+      player.position = {
+        x: command.x ?? player.position?.x ?? 0,
+        y: command.y ?? player.position?.y ?? 0
+      };
+    }
+  }
+
   res.json({
     ok: true,
     roomId,
