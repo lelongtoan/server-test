@@ -43,6 +43,42 @@ app.post("/create-room", (req, res) => {
   });
 });
 
+app.post("/join-player", (req, res) => {
+  const { roomId, player } = req.body;
+  const room = rooms[roomId];
+
+  if (!room) {
+    res.status(404).json({ ok: false, error: "room_not_found" });
+    return;
+  }
+
+  if (!player || typeof player.playerId !== "number") {
+    res.status(400).json({ ok: false, error: "invalid_player" });
+    return;
+  }
+
+  const players = room.snapshot.players;
+  const idx = players.findIndex(p => p.playerId === player.playerId);
+
+  const playerState = {
+    playerId: player.playerId,
+    playerName: player.playerName || `Player ${player.playerId}`,
+    hp: player.hp ?? 100,
+    maxHp: player.maxHp ?? 100,
+    position: player.position || { x: 0, y: 0 }
+  };
+
+  if (idx >= 0) players[idx] = playerState;
+  else players.push(playerState);
+
+  res.json({
+    ok: true,
+    roomId,
+    player: playerState,
+    playerCount: players.length
+  });
+});
+
 app.get("/snapshot/:roomId", (req, res) => {
   const room = rooms[req.params.roomId];
   if (!room) {
